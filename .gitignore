@@ -1,3 +1,7 @@
+.idea
+target
+.project
+.classpath
 # Compiled class file
 *.class
 
@@ -11,6 +15,7 @@
 .mtj.tmp/
 
 # Package Files #
+*.iml
 *.jar
 *.war
 *.nar
