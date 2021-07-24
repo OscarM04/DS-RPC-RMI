@@ -21,7 +21,8 @@
         <module>logic</module>
         <module>exceptions</module>
         <module>entitys</module>
-        <module>application</module>
+        <module>BANK</module>
+        <module>ATM</module>
     </modules>
 
 
