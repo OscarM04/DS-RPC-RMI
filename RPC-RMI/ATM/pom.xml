@@ -10,6 +10,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ATM</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>ucab</groupId>
+            <artifactId>controllers</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 
 </project>

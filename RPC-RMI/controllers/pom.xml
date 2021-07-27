@@ -11,7 +11,7 @@
 	<groupId>ucab</groupId>
 	<artifactId>controllers</artifactId>
 	<version>1.0.0</version>
-	<name>controllers</name>
+	<name>Bank</name>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
@@ -19,10 +19,11 @@
 
 		<dependency>
 			<groupId>ucab</groupId>
-			<artifactId>logic</artifactId>
+			<artifactId>data-access</artifactId>
 			<version>1.0.0</version>
 			<scope>compile</scope>
 		</dependency>
+
 	</dependencies>
 
 </project>
