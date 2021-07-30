@@ -1,6 +1,8 @@
 package entitys;
 
-public class AccountEntity {
+import java.io.Serializable;
+
+public class AccountEntity implements Serializable {
 
     private Integer id;
     private Integer number;

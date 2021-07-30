@@ -1,11 +1,13 @@
 package User;
 
+import dataAcces.DAOAccount;
 import dataAcces.DAOUser;
 import exceptions.CustomException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserController extends UnicastRemoteObject implements IUser {
 
@@ -22,24 +24,36 @@ public class UserController extends UnicastRemoteObject implements IUser {
     public UserController() throws RemoteException {
     }
 
-    public void create() throws SQLException, CustomException {
-        DAOUser daoUser = new DAOUser();
-        daoUser.create();
-
-    }
-
     @Override
-    public Boolean checkIfExists(String ci) throws RemoteException {
+    public Boolean checkIfExists(long ci) throws RemoteException {
         DAOUser daoUser = new DAOUser();
         return daoUser.checkIfUserExists(ci);
     }
 
     @Override
-    public Boolean canCreateAccount(String ci) throws RemoteException {
+    public Boolean canCreateAccount(long ci) throws RemoteException {
         Boolean canCreate = false;
         DAOUser daoUser = new DAOUser();
-        Integer numberOfAccounts = daoUser.numberOfAccounts( ci);
+        long numberOfAccounts = daoUser.numberOfAccounts( ci);
         if (numberOfAccounts< 3) canCreate = true;
         return canCreate;
+    }
+
+    @Override
+    public Boolean signin(String username, String password) throws RemoteException, CustomException {
+        DAOUser daoUser = new DAOUser();
+        return daoUser.signin( username, password);
+    }
+
+    @Override
+    public List<Integer> listAccounts(long ci) throws RemoteException {
+        DAOUser daoUser = new DAOUser();
+        return daoUser.listAccounts(ci);
+    }
+
+    @Override
+    public List<String> checkAnotherAccount(long accountNumber, long ci) throws RemoteException {
+        DAOAccount daoAccount = new DAOAccount();
+        return daoAccount.checkAnotherAccount(accountNumber, ci);
     }
 }

@@ -1,3 +1,4 @@
+import Bank.BankController;
 import User.IUser;
 import User.UserController;
 
@@ -13,6 +14,7 @@ public class BANK {
         Registry registry = LocateRegistry.createRegistry(6666);
         //System.setProperty("java.rmi.server.hostname","127.0.0.1");
         registry.rebind("UserController", new UserController());
+        registry.rebind("BankController", new BankController());
         System.out.println("Server Ready");
     }
 }
