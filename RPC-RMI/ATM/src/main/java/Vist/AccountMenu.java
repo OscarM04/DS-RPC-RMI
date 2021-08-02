@@ -1,11 +1,27 @@
 package Vist;
 
+import Bank.IBank;
+import User.IUser;
+import exceptions.CustomException;
+
+import java.rmi.RemoteException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class AccountMenu {
+    private IUser userController;
+    private IBank bankController;
 
-    public void show(){
+    public void setUserController(IUser userController) {
+        this.userController = userController;
+    }
+
+    public void setBankController(IBank bankController) {
+        this.bankController = bankController;
+    }
+
+    public void show(String username) throws RemoteException {
         Scanner sn = new Scanner(System.in);
         boolean exit = false;
         int option; //Guardaremos la opcion del usuario
@@ -13,11 +29,16 @@ public class AccountMenu {
 
         while (!exit) {
             System.out.println("************* Mini-banco: Deposito a cuentas *************");
-            System.out.println("1. Cuenta *****-123");
-            System.out.println("2. Cuenta *****-123");
-            System.out.println("3. Cuenta *****-123");
-            System.out.println("4. A cuentas de terceros");
-            System.out.println("5. Salir");
+            List<Long> accountList = userController.listAccounts( username);
+            int i = 1;
+            for (long account:accountList
+            ) {
+                System.out.println(i +". Cuenta: "+ account);
+                i++;
+            }
+
+            System.out.println("7. A cuentas de terceros");
+            System.out.println("0. Salir");
             System.out.println("************* ******************************* *************");
             try {
                 System.out.print("Escribe una de las opciones: ");
@@ -26,58 +47,42 @@ public class AccountMenu {
                 switch (option) {
                     case 1:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-                        amountDeposit = this.getDepostAmount();
-                        if(amountDeposit > 0){
-                            System.out.println("Se realizo el deposito exitosamente a tal cuenta");
-                            System.out.println("El nuevo monto es tal");
-                        }else{
-                            System.out.println("Debes ingresar un monto superior a 0");
-                            exit = true;
-                        }
+                        this.getDepostAmount( accountList.get(0));
+                        exit = true;
                         break;
                     case 2:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-                        amountDeposit = this.getDepostAmount();
-                        if(amountDeposit > 0){
-                            System.out.println("Se realizo el deposito exitosamente a tal cuenta");
-                            System.out.println("El nuevo monto es tal");
-                        }else{
-                            System.out.println("Debes ingresar un monto superior a 0");
-                            exit = true;
-                        }
+                        if ( accountList.get(1) == null) break;
+                        this.getDepostAmount( accountList.get(1));
+                        exit = true;
                         break;
                     case 3:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-                        amountDeposit = this.getDepostAmount();
-                        if(amountDeposit > 0){
-                            System.out.println("Se realizo el deposito exitosamente a tal cuenta");
-                            System.out.println("El nuevo monto es tal");
-                        }else{
-                            System.out.println("Debes ingresar un monto superior a 0");
-                            exit = true;
-                        }
+                        if ( accountList.get(2) == null) break;
+                        this.getDepostAmount( accountList.get(2));
+                        exit = true;
                         break;
-                    case 4:
+                    case 7:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-                        boolean success = this.thirdAccountMenuShow();
-                        if(!success){
-                            exit = true;
-                        }
+                        this.thirdAccountMenuShow();
+                        exit = true;
                         break;
-                    case 5:
+                    case 0:
                         exit = true;
                         break;
                     default:
-                        System.out.println("Solo números entre 1 y 3");
+                        System.out.println("Opcion Invalida");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Debes insertar un número");
                 sn.next();
+            }catch (IndexOutOfBoundsException e){
+
             }
         }
     }
 
-    public boolean thirdAccountMenuShow(){
+    public void thirdAccountMenuShow() throws RemoteException {
         String accountNumber;
         String document;
 
@@ -88,33 +93,24 @@ public class AccountMenu {
         System.out.print("Documento de identidad del titular: ");
         document = keyboard.nextLine();
 
-        //aca validas si existe blabla bla y retornas true o false
+        List<String> accountData = userController.checkAnotherAccount(
+                Long.parseLong(accountNumber.trim()), Long.parseLong(document.trim())
+        );
 
-        boolean exist = true;
 
-        if(exist){
+        if( accountData != null){
             String continueStep;
-            System.out.println("Dueño de la cuenta fulanito de tal");
+            System.out.println("Dueño: " + accountData.get(0) + "- Usuario:"+ accountData.get(1));
             System.out.print("Deseas continuar con el proceso:(responde 's' o 'si' para continuar)");
             continueStep = keyboard.nextLine();
             if(continueStep.equals("s") || continueStep.equals("si")){
-                float amountDeposit = this.getDepostAmount();
-                if(amountDeposit > 0){
-                    System.out.println("Se realizo el deposito exitosamente");
-                }else{
-                    System.out.println("Debes ingresar un monto superior a 0");
-                    exist = false;
-                }
-            }else{
-                exist = false;
+                this.getDepostAmount(Long.parseLong(accountNumber));
             }
-
         }
-        return exist;
     }
 
 
-    public float getDepostAmount(){
+    public void getDepostAmount( long accountNumber){
         String amountString;
         String description;
         float amount;
@@ -126,10 +122,15 @@ public class AccountMenu {
 
         try {
             amount = Float.parseFloat(amountString);
-            return amount;
+            List<String> result = bankController.deposit( amount , description, accountNumber);
+            for (String toPrint :
+                    result) {
+                System.out.println(toPrint);
+            }
         } catch (NumberFormatException e) {
             System.out.println("Debes insertar un número");
-            return 0;
+
+        } catch (CustomException | RemoteException e) {
         }
     }
 }

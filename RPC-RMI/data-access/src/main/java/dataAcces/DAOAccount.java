@@ -13,7 +13,7 @@ public class DAOAccount {
 
     private DAO dao = new DAO();
 
-    public void create( long ci, double initialAmount, int accountNumber) throws CustomException {
+    public void create( long ci, float initialAmount, int accountNumber) throws CustomException {
         try {
             dao.createConnection();
             String sql = "INSERT INTO accounts (id, fk_user, number, current_balance) VALUES (?, ?, ?, ?)";
@@ -27,7 +27,7 @@ public class DAOAccount {
             statement.setInt( 1, lastId);
             statement.setLong( 2, ci);
             statement.setInt(3, accountNumber);
-            statement.setDouble(4, initialAmount);
+            statement.setFloat(4, initialAmount);
             statement.executeUpdate();
             dao.closeConnection();
         } catch (CustomException | SQLException e) {
@@ -48,7 +48,7 @@ public class DAOAccount {
             while (resultSet.next()) {
                 TransactionEntity row = new TransactionEntity();
                 row.setId(resultSet.getInt("id"));
-                row.setAmount( resultSet.getDouble("amount"));
+                row.setAmount( resultSet.getFloat("amount"));
                 row.setDate( resultSet.getDate("date"));
                 row.setDescription( resultSet.getString("description"));
                 row.setType( resultSet.getString("type"));
@@ -61,7 +61,7 @@ public class DAOAccount {
         }catch (SQLException | CustomException e){
             e.printStackTrace();
         }
-        if ( result == null ) throw new CustomException("No posee transacciones");
+        if ( result.isEmpty() ) throw new CustomException("No posee transacciones");
         return result;
     }
 
@@ -92,7 +92,7 @@ public class DAOAccount {
         return notNull?result:null;
     }
 
-    public List<String> operation( double amount, String description, long accountNumber, String type, long destAccount) throws CustomException {
+    public List<String> operation( float amount, String description, long accountNumber, String type, long destAccount) throws CustomException {
         List<String> result = new ArrayList<>();
         try {
             dao.createConnection();
@@ -105,7 +105,7 @@ public class DAOAccount {
             String sql2 = "INSERT INTO transactions (id, amount, type,date,description,fk_source_account, fk_destination_account) VALUES (?,?,?, ?,? , ?,?)";
             PreparedStatement statement2 = dao.getConnection().prepareStatement(sql2);
             statement2.setInt( 1, lastId);
-            statement2.setDouble( 2, amount);
+            statement2.setFloat( 2, amount);
             statement2.setString( 3, type);
             statement2.setTimestamp( 4, Timestamp.from(Instant.now()));
             statement2.setString( 5, description);
@@ -116,18 +116,18 @@ public class DAOAccount {
                 statement2.setNull(7, Types.INTEGER);
             }
             if ( statement2.executeUpdate() == 1){
-                double current_balance;
+                float current_balance;
                 if ( !type.equals("transference")) {
                     String sql3 = "SELECT current_balance FROM accounts WHERE number=?";
                     PreparedStatement statement3 = dao.getConnection().prepareStatement(sql3);
                     statement3.setLong(1, accountNumber);
                     ResultSet resultSet1 = statement3.executeQuery();
                     resultSet1.next();
-                    current_balance = resultSet1.getLong("current_balance");
+                    current_balance = resultSet1.getFloat("current_balance");
                     current_balance += amount;
                     String sql4 = "UPDATE accounts SET current_balance=? WHERE number = ?";
                     PreparedStatement statement4 = dao.getConnection().prepareStatement(sql4);
-                    statement4.setDouble(1, current_balance);
+                    statement4.setFloat(1, current_balance);
                     statement4.setLong(2, accountNumber);
                     statement4.executeUpdate();
                 }else{
@@ -136,11 +136,11 @@ public class DAOAccount {
                     statement3.setLong(1, accountNumber);
                     ResultSet resultSet1 = statement3.executeQuery();
                     resultSet1.next();
-                    current_balance = resultSet1.getLong("current_balance");
+                    current_balance = resultSet1.getFloat("current_balance");
                     current_balance -= amount;
                     String sql4 = "UPDATE accounts SET current_balance=? WHERE number = ?";
                     PreparedStatement statement4 = dao.getConnection().prepareStatement(sql4);
-                    statement4.setDouble(1, current_balance);
+                    statement4.setFloat(1, current_balance);
                     statement4.setLong(2, accountNumber);
                     statement4.executeUpdate();
                     String sql5 = "SELECT current_balance FROM accounts WHERE number=?";
@@ -148,21 +148,21 @@ public class DAOAccount {
                     statement5.setLong(1, destAccount);
                     ResultSet resultSet2 = statement5.executeQuery();
                     resultSet2.next();
-                    double current_balance_dest = resultSet2.getLong("current_balance");
+                    float current_balance_dest = resultSet2.getFloat("current_balance");
                     current_balance_dest += amount;
                     String sql6 = "UPDATE accounts SET current_balance=? WHERE number = ?";
                     PreparedStatement statement6 = dao.getConnection().prepareStatement(sql6);
-                    statement6.setDouble(1, current_balance_dest);
+                    statement6.setFloat(1, current_balance_dest);
                     statement6.setLong(2, destAccount);
                     statement6.executeUpdate();
                 }
-                result.add( type);
-                result.add( String.valueOf(Timestamp.from(Instant.now())));
-                result.add( String.valueOf(amount));
-                result.add( description);
-                result.add( "New ammount " + current_balance);
-                result.add( String.valueOf(accountNumber));
-                if ( type.equals("transference")) result.add( "Destination Account: "+String.valueOf( destAccount));
+                result.add( "Tipo de transaccion:" + type);
+                result.add( "Fecha: " + String.valueOf(Timestamp.from(Instant.now())));
+                result.add( "Monto: "+String.valueOf(amount));
+                result.add( "Descripcion" + description);
+                result.add( "Nuevo Balance " + current_balance);
+                result.add( "Origen: "+ String.valueOf(accountNumber));
+                if ( type.equals("transference")) result.add( "Destino: "+ String.valueOf( destAccount));
             }else{
                 result = null;
             }

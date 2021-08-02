@@ -25,7 +25,7 @@ public class CustomException extends Exception{
 
     @Override
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     public void setMessage(String message) {

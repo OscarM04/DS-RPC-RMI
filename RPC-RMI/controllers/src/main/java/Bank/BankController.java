@@ -7,6 +7,7 @@ import exceptions.CustomException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,10 +19,9 @@ public class BankController extends UnicastRemoteObject implements IBank {
 
     @Override
     public void accountOpening(
-            long ci, String username, String password, String name, double initialAmount, boolean newUser
+            long ci, String username, String password, String name, float initialAmount, boolean newUser
     ) throws CustomException {
         try {
-            // AGREGAR LOGICA SI EL USUARIO EXISTE SOLO AGREGARLE UNA CUENTA MAS
             if ( newUser ){
                 DAOUser daoUser = new DAOUser();
                 daoUser.create( ci, username, password, name);
@@ -41,19 +41,33 @@ public class BankController extends UnicastRemoteObject implements IBank {
     }
 
     @Override
-    public List<String> transaction(double amount, String description, long accountNumber, long destAccount) throws CustomException {
+    public List<String> transaction(float amount, String description, long accountNumber, long destAccount) throws CustomException {
         DAOAccount daoAccount = new DAOAccount();
-        return daoAccount.operation( amount, "", accountNumber,"transference", destAccount);
+        DAOUser daoUser = new DAOUser();
+        if (daoUser.accountBalance(accountNumber) < amount) {
+            List<String> result = new ArrayList<>();
+            result.add("Monto a transferir mayor que el balance de la cuenta");
+            return result;
+        } else {
+            return daoAccount.operation(amount, "", accountNumber, "transference", destAccount);
+        }
     }
 
     @Override
-    public List<String> withdrawal(  double amount, long accountNumber) throws CustomException {
+    public List<String> withdrawal(  float amount, long accountNumber) throws CustomException {
         DAOAccount daoAccount = new DAOAccount();
-        return daoAccount.operation( amount*-1, "", accountNumber,"withdrawal", 0);
+        List<String> result = new ArrayList<>();
+        DAOUser daoUser= new DAOUser();
+        if (daoUser.accountBalance( accountNumber) < amount){
+            result.add("Monto a retirar mayor que el balance de la cuenta");
+            return result;
+        }else{
+            return daoAccount.operation( amount*-1, "", accountNumber,"withdrawal", 0);
+        }
     }
 
     @Override
-    public List<String> deposit( double amount, String description, long accountNumber) throws CustomException {
+    public List<String> deposit( float amount, String description, long accountNumber) throws CustomException {
         DAOAccount daoAccount = new DAOAccount();
         return daoAccount.operation( amount, description, accountNumber,"deposit",0);
     }

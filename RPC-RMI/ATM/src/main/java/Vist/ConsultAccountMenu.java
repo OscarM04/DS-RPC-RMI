@@ -1,21 +1,43 @@
 package Vist;
 
+import Bank.IBank;
+import User.IUser;
+import entitys.TransactionEntity;
+import exceptions.CustomException;
+
+import java.rmi.RemoteException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
-public class ConsultAccountMenu {
+public class ConsultAccountMenu{
 
-    public void show(){
+    private IUser userController;
+    private IBank bankController;
+
+    public void setUserController(IUser userController) {
+        this.userController = userController;
+    }
+
+    public void setBankController(IBank bankController) {
+        this.bankController = bankController;
+    }
+
+    public void show(String username) throws RemoteException {
         Scanner sn = new Scanner(System.in);
         boolean exit = false;
         int option; //Guardaremos la opcion del usuario
 
         while (!exit) {
             System.out.println("************* Mini-banco: Menú de transacciones *************");
-            System.out.println("1. Consultar: *****-4567");
-            System.out.println("1. Consultar: *****-4569");
-            System.out.println("3. Consultar: *****-4570");
-            System.out.println("4. Salir");
+            List<Long> accountList = userController.listAccounts( username);
+            int i = 1;
+            for (long account:accountList
+                 ) {
+                System.out.println(i +". Cuenta: "+ account);
+                i++;
+            }
+            System.out.println("0. Salir");
             System.out.println("************* ******************************* *************");
             try {
                 System.out.print("Escribe una de las opciones: ");
@@ -24,42 +46,50 @@ public class ConsultAccountMenu {
                 switch (option) {
                     case 1:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-
-                        System.out.println("tienes 5000$");
-
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
+                        List<TransactionEntity> transactions = bankController.viewAccount(accountList.get(0));
+                        for (TransactionEntity transaction :
+                                transactions) {
+                            System.out.println(
+                                    transaction
+                            );
+                        }
+                        System.out.println("Balance: " + userController.accountBalance( accountList.get(0)));
                         break;
                     case 2:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-                        System.out.println("tienes 9000$");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
+                        if ( accountList.get(1) == null) break;
+                        List<TransactionEntity> transactions2 = bankController.viewAccount(accountList.get(1));
+                        for (TransactionEntity transaction :
+                                transactions2) {
+                            System.out.println(
+                                    transaction
+                            );
+                        }
+                        System.out.println("Balance: " + userController.accountBalance(accountList.get(1)));
                         break;
                     case 3:
                         System.out.println("\n\n\n\n\n\n\n\n\n\n");
-                        System.out.println("tienes 5000$");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
-                        System.out.println("Transaccion: 12121 Monto: 5000$ hacia:****-12121");
+                        if ( accountList.get(2) == null) break;
+                        List<TransactionEntity> transactions3 = bankController.viewAccount(accountList.get(2));
+                        for (TransactionEntity transaction :
+                                transactions3) {
+                            System.out.println(
+                                    transaction
+                            );
+                        }
+                        System.out.println("Balance: " + userController.accountBalance(accountList.get(2)));
                         break;
-                    case 4:
+                    case 0:
                         exit = true;
                         break;
                     default:
-                        System.out.println("Solo números entre 1 y 4");
+                        System.out.println("Opcion Invalida");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Debes insertar un número");
                 sn.next();
+            } catch (CustomException | IndexOutOfBoundsException e){
+
             }
         }
     }

@@ -6,13 +6,13 @@ public class AccountEntity implements Serializable {
 
     private Integer id;
     private Integer number;
-    private Double current_balance;
+    private float current_balance;
     private UserEntity fk_user;
 
     public AccountEntity() {
     }
 
-    public AccountEntity(Integer id, Integer number, Double current_balance, UserEntity fk_user) {
+    public AccountEntity(Integer id, Integer number, float current_balance, UserEntity fk_user) {
         this.id = id;
         this.number = number;
         this.current_balance = current_balance;
@@ -31,16 +31,16 @@ public class AccountEntity implements Serializable {
         return number;
     }
 
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    public Double getCurrent_balance() {
+    public float getCurrent_balance() {
         return current_balance;
     }
 
-    public void setCurrent_balance(Double current_balance) {
+    public void setCurrent_balance(float current_balance) {
         this.current_balance = current_balance;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public UserEntity getFk_user() {

@@ -2,7 +2,10 @@ package dataAcces;
 
 import exceptions.CustomException;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,16 +65,17 @@ public class DAOUser{
         return isValid;
     }
 
-    public List<Integer> listAccounts(long ci){
-        List<Integer> accountList = new ArrayList<>();
+    public List<Long> listAccounts(String username){
+        List<Long> accountList = new ArrayList<>();
         try{
             dao.createConnection();
-            String sql = "SELECT a.number FROM users JOIN accounts a on users.ci = a.fk_user WHERE users.ci=" + ci;
-            Statement statement = dao.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            String sql = "SELECT a.number FROM users JOIN accounts a on users.ci = a.fk_user WHERE users.username=?";
+            PreparedStatement statement = dao.getConnection().prepareStatement(sql);
+            statement.setString( 1, username);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 System.out.println("LIST ACCOUNTS: " + resultSet.getInt(1));
-                accountList.add( resultSet.getInt(1));
+                accountList.add( resultSet.getLong(1));
             }
             dao.closeConnection();
         }catch (Exception e ){
@@ -94,5 +98,22 @@ public class DAOUser{
             e.printStackTrace();
         }
         return numberOfAccounts;
+    }
+
+    public float accountBalance( long accountNumber){
+        float balance = 0;
+        try{
+            dao.createConnection();
+            String sql = "SELECT a.current_balance FROM  accounts a WHERE a.number=" + accountNumber;
+            Statement statement = dao.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            resultSet.next();
+            System.out.println(resultSet.getInt(1));
+            balance = resultSet.getFloat(1);
+            dao.closeConnection();
+        }catch (Exception e ){
+            e.printStackTrace();
+        }
+        return balance;
     }
 }

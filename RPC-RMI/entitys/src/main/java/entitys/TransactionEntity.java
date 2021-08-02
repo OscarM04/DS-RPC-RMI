@@ -5,8 +5,7 @@ import java.sql.Date;
 
 public class TransactionEntity implements Serializable {
     private Integer id;
-    private Integer number;
-    private Double amount;
+    private float amount;
     private Date date;
     private String type;
     private String description;
@@ -24,9 +23,8 @@ public class TransactionEntity implements Serializable {
         this.type = type;
     }
 
-    public TransactionEntity(Integer id, Integer number, Double amount, Date date, String description, int fk_source_account, int fk_destination_account) {
+    public TransactionEntity(Integer id, float amount, Date date, String description, int fk_source_account, int fk_destination_account) {
         this.id = id;
-        this.number = number;
         this.amount = amount;
         this.date = date;
         this.description = description;
@@ -42,19 +40,11 @@ public class TransactionEntity implements Serializable {
         this.id = id;
     }
 
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    public Double getAmount() {
+    public float getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(float amount) {
         this.amount = amount;
     }
 
@@ -88,5 +78,16 @@ public class TransactionEntity implements Serializable {
 
     public void setFk_destination_account(int fk_destination_account) {
         this.fk_destination_account = fk_destination_account;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction: " +
+                date +
+                "  " + amount +
+                "  " + type +
+                "  " + description +
+                "  " + fk_source_account +
+                "  " + fk_destination_account;
     }
 }

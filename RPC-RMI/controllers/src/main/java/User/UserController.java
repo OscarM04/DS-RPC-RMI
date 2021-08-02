@@ -3,14 +3,11 @@ package User;
 import dataAcces.DAOAccount;
 import dataAcces.DAOUser;
 import exceptions.CustomException;
-
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserController extends UnicastRemoteObject implements IUser {
-
     /**
      * Creates and exports a new UnicastRemoteObject object using an
      * anonymous port.
@@ -22,6 +19,12 @@ public class UserController extends UnicastRemoteObject implements IUser {
      * @since JDK1.1
      */
     public UserController() throws RemoteException {
+    }
+
+    @Override
+    public float accountBalance(long accountNumber) throws RemoteException, CustomException {
+        DAOUser daoUser = new DAOUser();
+        return daoUser.accountBalance( accountNumber);
     }
 
     @Override
@@ -46,9 +49,9 @@ public class UserController extends UnicastRemoteObject implements IUser {
     }
 
     @Override
-    public List<Integer> listAccounts(long ci) throws RemoteException {
+    public List<Long> listAccounts(String username) throws RemoteException {
         DAOUser daoUser = new DAOUser();
-        return daoUser.listAccounts(ci);
+        return daoUser.listAccounts( username);
     }
 
     @Override
@@ -56,4 +59,5 @@ public class UserController extends UnicastRemoteObject implements IUser {
         DAOAccount daoAccount = new DAOAccount();
         return daoAccount.checkAnotherAccount(accountNumber, ci);
     }
+
 }

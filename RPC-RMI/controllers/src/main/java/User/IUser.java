@@ -8,9 +8,10 @@ import java.util.List;
 
 public interface IUser extends Remote {
 
+    float accountBalance (long accountNumber) throws RemoteException, CustomException;
     Boolean checkIfExists(long ci) throws RemoteException;
     Boolean canCreateAccount(long ci) throws RemoteException;
     Boolean signin(String username, String password) throws RemoteException, CustomException;
-    List<Integer> listAccounts(long ci) throws RemoteException;
+    List<Long> listAccounts(String username) throws RemoteException;
     List<String> checkAnotherAccount( long accountNumber, long ci) throws RemoteException;
 }
