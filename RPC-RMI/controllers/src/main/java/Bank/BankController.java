@@ -10,6 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.spi.LocaleNameProvider;
 
 public class BankController extends UnicastRemoteObject implements IBank {
 
@@ -30,10 +31,12 @@ public class BankController extends UnicastRemoteObject implements IBank {
             DAOAccount daoAccount = new DAOAccount();
             Date date = new Date();
             String accountNumber = String.valueOf(date.getTime());
-            System.out.println( accountNumber.substring( accountNumber.length() - 8 ));
+            long number = Long.parseLong(accountNumber.substring( accountNumber.length() - 8 ));
+            System.out.println( number);
             daoAccount.create(
-                    ci, initialAmount, Integer.parseInt(accountNumber.substring( accountNumber.length() - 8 ))
+                    ci, initialAmount, number
             );
+
         } catch (CustomException e) {
             e.printStackTrace();
             throw e;

@@ -13,7 +13,7 @@ public class DAOAccount {
 
     private DAO dao = new DAO();
 
-    public void create( long ci, float initialAmount, int accountNumber) throws CustomException {
+    public void create( long ci, float initialAmount, long accountNumber) throws CustomException {
         try {
             dao.createConnection();
             String sql = "INSERT INTO accounts (id, fk_user, number, current_balance) VALUES (?, ?, ?, ?)";
@@ -26,9 +26,25 @@ public class DAOAccount {
             PreparedStatement statement = dao.getConnection().prepareStatement(sql);
             statement.setInt( 1, lastId);
             statement.setLong( 2, ci);
-            statement.setInt(3, accountNumber);
+            statement.setLong(3, accountNumber);
             statement.setFloat(4, initialAmount);
             statement.executeUpdate();
+            String sql3 = "SELECT id FROM transactions ORDER BY ID DESC LIMIT 1";
+            Statement statement3 = dao.getConnection().createStatement();
+            ResultSet resultSet3 = statement3.executeQuery(sql3);
+            resultSet3.next();
+            System.out.println( "Last id in Transactions: " + resultSet.getInt(1));
+            int lastId2 = resultSet3.getInt( 1) + 1;
+            String sql4 = "INSERT INTO transactions (id, amount, type,date,description,fk_source_account, fk_destination_account) VALUES (?,?,?, ?,? , ?,?)";
+            PreparedStatement statement4 = dao.getConnection().prepareStatement(sql4);
+            statement4.setInt( 1, lastId2);
+            statement4.setFloat( 2, initialAmount);
+            statement4.setString( 3, "deposit");
+            statement4.setTimestamp( 4, Timestamp.from(Instant.now()));
+            statement4.setString( 5, "Initial Deposit");
+            statement4.setLong( 6, accountNumber);
+            statement4.setNull(7, Types.INTEGER);
+            statement4.executeUpdate();
             dao.closeConnection();
         } catch (CustomException | SQLException e) {
             e.printStackTrace();
