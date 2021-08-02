@@ -1,0 +1,27 @@
+version: '3.0'
+services:
+
+  compile-project:
+    build: ./RPC-RMI/
+    volumes:
+      - ./RPC-RMI:/app/
+
+  atm:
+    build: ./RPC-RMI/ATM/
+    container_name: atm
+
+  bank:
+    build: ./RPC-RMI/BANK/
+    ports:
+      - "6666:6666"
+
+  db_Storage:
+    image: postgres:10-alpine
+    volumes: 
+      - ./Scripts/create.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '5432:5432'
+    environment:
+      - 'POSTGRES_USER=root'
+      - 'POSTGRES_PASSWORD=root'
+      - 'POSTGRES_DB=bank'

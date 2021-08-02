@@ -16,13 +16,14 @@
 
     <modules>
         <module>data-access</module>
-        <module>services</module>
         <module>controllers</module>
-        <module>logic</module>
         <module>exceptions</module>
         <module>entitys</module>
-        <module>application</module>
+        <module>BANK</module>
+        <module>ATM</module>
     </modules>
-
+    <build>
+        <defaultGoal>install</defaultGoal>
+    </build>
 
 </project>
