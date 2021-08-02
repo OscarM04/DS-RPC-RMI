@@ -1,7 +1,6 @@
 package atm;
 import Bank.IBank;
 import User.IUser;
-import Vist.MainMenu;
 import exceptions.CustomException;
 
 import java.net.MalformedURLException;

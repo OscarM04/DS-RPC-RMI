@@ -1,4 +1,4 @@
-package Vist;
+package atm;
 
 import Bank.IBank;
 import User.IUser;

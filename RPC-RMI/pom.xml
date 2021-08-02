@@ -22,6 +22,8 @@
         <module>BANK</module>
         <module>ATM</module>
     </modules>
-
+    <build>
+        <defaultGoal>install</defaultGoal>
+    </build>
 
 </project>
