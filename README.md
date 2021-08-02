@@ -24,7 +24,7 @@ $ docker-compose up compile-project
 Ejecutar los siguientes comandos para correr el servidor BANK
 - En una ventana del terminal ejecutar el siguiente comando para iniciar la base de datos 
 ```console
-$ docker compose up db_Storage 
+$ docker-compose up db_Storage 
 ```
 - En otra ventana del terminal ejecutar el siguiente comando para iniciar el servidor, verificar que el puerto 6666 este libre 
 ```console
